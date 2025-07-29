@@ -34,7 +34,7 @@ router.route("/avtar").patch(verifyJWT,upload.single("avatar"),updateUserAvatar)
 
 router.route("/cover-image").patch(verifyJWT,upload.single("CoverImg"),updateCoverImg);
 
-router.route("/c/:username").get(verifyJWT,getUserProfile);
+router.route("/c/:username").get(verifyJWT,getUserProfile); 
 
 router.route("/history").get(verifyJWT,getWatchHistory); 
 

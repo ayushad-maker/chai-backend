@@ -23,7 +23,6 @@ const UserSchema = new Schema(
         fullname:{
             type:String,
             required:true,
-            lowercase:true,
             trim:true,
             index:true
         },
@@ -41,7 +40,8 @@ const UserSchema = new Schema(
         ],
         password:{
             type:String,
-            required:[true,"password is required"]
+            required:[true,"password is required"],
+            select:false
         },
         refreshToken:{
             type:String
@@ -85,8 +85,8 @@ UserSchema.pre("save",async function(next){
     }
 })
 
-
 UserSchema.methods.isPasswordCorrect = async function(password) {
+    console.log("Password from req.body:", password);
     return await bcrypt.compare(password,this.password)
 }
 
@@ -94,7 +94,7 @@ UserSchema.methods.generateAccessToken = function(){
     return jwt.sign(
         {
         _id:this._id,
-        password:this.password,
+        username:this.username,
         email:this.username,
         fullname:this.fullname
        },

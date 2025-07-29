@@ -123,83 +123,64 @@ const registerUser = asyncHandler(async (req,res)=>{
        )
     })
 //done
-const loginUser = asyncHandler(async (req,res)=>{
-         //get user detail from the frontend
-         //validation is not empty
-         //find the user
-         //pasword check
-         //access and referesh token
-         //send cookie 
-         
-         
-    
-      // access front end details      
+const loginUser = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  console.log("Login inputs:", { email, password });
 
-      const{username,email,password} = req.body;
-      console.log(email);
+  // Validate inputs
+  if (!email || !password) {
+    throw new ApiError(400, "Email and password are required.");
+  }
 
+  // Find user (include password explicitly if schema hides it by default)
+  const user = await User.findOne({ email }).select("+password +refreshToken");
 
-      // validation
-         
-      if(!username && !email){
-        throw new ApiError(400,"username or password is required");
-      }
-       
-      // check if user is valid or not 
-       console.log("Login inputs:", { email, username, password });
-       const user = await User.findOne({      
-           $or: [{username},{email}] 
-      })
-      console.log("Found user:", user);
+  if (!user) {
+    throw new ApiError(404, "User not found with this email.");
+  }
 
+  // Check if user has a password
+  if (!user.password) {
+    throw new ApiError(500, "Password not stored for this user.");
+  }
 
-      if(!user){
-        throw new ApiError(400,"user is not defined successfully.")
-      }
-     
-      // password validation 
+  // Compare password
+  const isPasswordValid = await user.isPasswordCorrect(password);
+  if (!isPasswordValid) {
+    throw new ApiError(401, "Invalid password.");
+  }
 
-      const isPasswordValid = await user.isPasswordCorrect(password)
+  // Generate new tokens
+  const { accessToken, refreshToken } = await genrateAccessandRefreshTokens(user._id);
 
-      if(!isPasswordValid){
-        throw new ApiError(400,"password is not correct")
-      }
+  // Get user details without sensitive fields
+  const loggedInUser = await User.findById(user._id).select(
+    "-password -refreshToken -createdAt -updatedAt"
+  );
 
-      // acess and refresh token
+  // Cookie options
+  const options = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+  };
 
-     if (!user?._id) {
-     throw new ApiError(400, "User ID is missing during token generation");
-      }
-     const { accessToken, refreshToken } = await genrateAccessandRefreshTokens(user._id);
-
-
-      // remove password and refresh token from the frontend
-
-      const loggedInUser = await User.findById(user._id).select("-password -refreshToken -createdAt -updatedAt")
- 
-       
-      // Cookies
-      const options = {
-        httpOnly :true,
-        secure : true
-      }
-
-      // last response
-       
-      return res
-      .status(200)
-      .cookie("accessToken",accessToken,options)
-      .cookie("refreshToken",refreshToken,options)
-      .json({
-        sucess:true,
-        message:"User logged in Successfully",
-        data :
-       {
-        user : loggedInUser,
+  // Send response with cookies
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json({
+      success: true,
+      message: "User logged in successfully",
+      data: {
+        user: loggedInUser,
         accessToken,
-        refreshToken}
-        })
-})// done
+        refreshToken,
+      },
+    });
+});
+
 
 const logOutUser = asyncHandler(async (req, res) => {
     if (!req.user || !req.user._id) {
@@ -509,7 +490,6 @@ const getWatchHistory = asyncHandler(async (req, res) => {
         )
     );
 });
-
 
 const getLikeButton = asyncHandler(async(req,res)=>{
        
