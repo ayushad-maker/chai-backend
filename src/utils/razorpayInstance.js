@@ -2,7 +2,7 @@ import Razorpay from "razorpay";
 import dotenv from "dotenv"
 
 dotenv.config({
-  path: "./.env", // Correct path to the .env file
+  path: "./.env", 
 });
 
 
