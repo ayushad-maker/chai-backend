@@ -10,7 +10,7 @@ import mongoose from "mongoose";
 
 const genrateAccessandRefreshTokens = async (userId) => {
     try {
-        console.log("🔑 Step 1: Fetching user by ID:", userId);
+    
         const user = await User.findById(userId);
 
         if (!user) {
@@ -18,15 +18,13 @@ const genrateAccessandRefreshTokens = async (userId) => {
             throw new ApiError(404, "User not found during token generation");
         }
 
-        console.log("🔑 Step 2: Generating tokens");
+       
         const refreshToken = user.generateRefreshToken();
         const accessToken = user.generateAccessToken();
 
-        console.log("📝 Step 3: Saving refresh token to DB");
+        
         user.refreshToken = refreshToken;
         await user.save({ validateBeforeSave: false });
-
-        console.log("✅ Tokens generated successfully");
 
         return { refreshToken, accessToken };
     } catch (error) {
@@ -34,9 +32,7 @@ const genrateAccessandRefreshTokens = async (userId) => {
         throw new ApiError(400, "Something went wrong while generating access and refresh token.");
     }
 };
-     
-
-    
+        
 const registerUser = asyncHandler(async (req,res)=>{
         // get user detail from the frontend -
         // validation-not empty -
@@ -78,7 +74,7 @@ const registerUser = asyncHandler(async (req,res)=>{
 
         // check for images and avatar
         const avatarLocalPath =  req.files?.avatar?.[0]?.path;
-        console.log("avatar localFilePath",avatarLocalPath);
+       
        // const coverImgLocalPath =  req.files?.coverImg[0]?.path;
 
         let coverImgLocalPath;
@@ -86,13 +82,13 @@ const registerUser = asyncHandler(async (req,res)=>{
             coverImgLocalPath = req.file?.coverImg?.[0]?.path
         }
         
-        console.log(req.files);
+  
         if(!avatarLocalPath){
             throw new ApiError(400,"avatar image not found");
         } 
           
         const avatar = await uploadOnCloudinary(avatarLocalPath);
-        console.log("avatar file",avatar);
+     
         const coverImg = coverImgLocalPath? await uploadOnCloudinary(coverImgLocalPath) : null;
 
     
@@ -125,7 +121,7 @@ const registerUser = asyncHandler(async (req,res)=>{
 //done
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  console.log("Login inputs:", { email, password });
+
 
   // Validate inputs
   if (!email || !password) {
