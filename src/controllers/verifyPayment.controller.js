@@ -10,7 +10,7 @@ export const verifyPayment = async (req, res) => {
     email,
     contact,
     amount, 
-    cartItems
+    cartItems,
     } = req.body;
 
   const body = razorpay_order_id + "|" + razorpay_payment_id;
@@ -27,20 +27,34 @@ export const verifyPayment = async (req, res) => {
   }
   
   try {
-     await Payment.create({
-        razorpay_order_id,
-        razorpay_payment_id,
-        razorpay_signature,
-        name,
-        email,
-        contact,
-        amount,
-        status:"Success",
-        cartItems
-     });
-     return res.status(200).json({success:true,message:"Payment Verified and Stored."})
-  } catch (error) {
-    console.error("Invalid Payment",error)
-    return res.status(400).json({success:false,message:"Failed to Store Payment"})
-  }
-};
+  const payment = await Payment.create({
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature,
+    name,
+    email,
+    contact,
+    amount,
+    status: "Success",  
+    cartItems,
+  });
+
+  console.log("✅ Payment saved:", payment);
+
+  return res.status(200).json({
+    success: true,
+    message: "Payment Verified and Stored.",
+    payment, // ✅ return the actual payment object
+  });
+} catch (error) {
+  console.error("Invalid Payment", error);
+  return res.status(400).json({
+    success: false,
+    message: "Failed to Store Payment",
+  });
+}
+
+
+}
+
+
