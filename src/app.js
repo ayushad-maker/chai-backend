@@ -13,6 +13,7 @@ import playlistRouter from "./routes/playlist.routes.js"
 import paymentRouter from "./routes/payment.routes.js"
 import paymentRoutes from "./routes/payments.routes.js"
 import orderRoutes from "./routes/order.routes.js"
+import ordersRoutes from "./routes/orders.routes.js"
 const app = express();
 
 app.use(cors({
@@ -40,5 +41,6 @@ app.use("/api/v1/subscriptions",subcriptionRouter)
 app.use("/api/v1/playlists",playlistRouter)
 app.use("/api/v1/payments",paymentRouter)
 app.use("/api/v1/payment",paymentRoutes)
-app.use("/api/v1/orders",orderRoutes)
+// app.use("/api/v1/orders",orderRoutes)
+app.use("/api/v1/order",ordersRoutes)
 export { app }

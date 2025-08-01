@@ -38,13 +38,14 @@ export const verifyPayment = async (req, res) => {
     status: "Success",  
     cartItems,
   });
+  
 
-  console.log("✅ Payment saved:", payment);
+
 
   return res.status(200).json({
     success: true,
     message: "Payment Verified and Stored.",
-    payment, // ✅ return the actual payment object
+    payment, 
   });
 } catch (error) {
   console.error("Invalid Payment", error);
