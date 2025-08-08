@@ -15,6 +15,7 @@ import paymentRoutes from "./routes/payments.routes.js"
 import orderRoutes from "./routes/order.routes.js"
 import ordersRoutes from "./routes/orders.routes.js"
 import productRoutes from "./routes/product.routes.js"
+import contactRoutes from "./routes/contact.routes.js"
 const app = express();
 
 app.use(cors({
@@ -45,4 +46,5 @@ app.use("/api/v1/payment",paymentRoutes)
 // app.use("/api/v1/orders",orderRoutes)
 app.use("/api/v1/order",ordersRoutes)
 app.use("/api/v1/products",productRoutes)
+app.use("/api/v1/contacts",contactRoutes)
 export { app }
